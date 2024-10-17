@@ -4,6 +4,7 @@ import { BuildOptions } from "esbuild";
 interface AdapterOptions {
   out?: string;
   buildOptions?: BuildOptions;
+  ssl?: boolean;
   usage?: "deno" | "deno-compile";
 }
 

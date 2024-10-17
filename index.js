@@ -8,7 +8,7 @@ const usageOptions = {
 
 /** @type {import('.').default} */
 export default function (opts = {}) {
-  const { out = "build", buildOptions = {}, usage = usageOptions.deno } = opts;
+  const { out = "build", buildOptions = {}, usage = usageOptions.deno, ssl = false } = opts;
 
   return {
     name: "deno-deploy-adapter",
@@ -32,6 +32,7 @@ export default function (opts = {}) {
       const modPath = fileURLToPath(
         new URL("./files/mod.ts", import.meta.url).href,
       );
+
       builder.copy(modPath, `${out}/mod.ts`, {
         replace: {
           SERVER: "./server.js",
@@ -40,6 +41,7 @@ export default function (opts = {}) {
           CURRENT_DIRNAME: usage === usageOptions.deno
             ? "new URL(import.meta.url).pathname"
             : "Deno.execPath()",
+          SSL_ACTIVATED: ssl ? "true" : "false",
         },
       });
 

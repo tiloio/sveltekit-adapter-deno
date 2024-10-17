@@ -10,6 +10,9 @@
   "type": "module",
   "main": "index.js",
   "types": "index.d.ts",
+  "scripts": {
+    "test": "deno compile --target aarch64-unknown-linux-gnu --allow-read --allow-net --allow-env test/ssl-test.ts && scp -6 ./ssl-test 'root@[2a01:4f8:c2c:780f::1]:/root/app/ssl-test'"
+  },
   "exports": {
     ".": {
       "types": "./index.d.ts",
