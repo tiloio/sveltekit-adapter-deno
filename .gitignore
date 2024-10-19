@@ -14,3 +14,6 @@ files/*
 !files/ssl
 !files/ssl/*.ts
 !demo
+
+!ssl
+!ssl/*.ts

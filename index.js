@@ -1,20 +1,25 @@
 import { fileURLToPath } from "node:url";
-import { build } from "esbuild";
+import { build } from "npm:esbuild";
 
 const usageOptions = {
   deno: "deno",
   compile: "deno-compile",
 };
 
+import { SslPlugin } from "./ssl/ssl-plugin.ts";
+export { SslPlugin };
+
 /** @type {import('.').default} */
 export default function (opts = {}) {
-  const { out = "build", buildOptions = {}, usage = usageOptions.deno, ssl = false } = opts;
+  const { out = "build", buildOptions = {}, usage = usageOptions.deno, ssl = false, plugins = [] } = opts;
 
   return {
     name: "deno-deploy-adapter",
 
     async adapt(builder) {
       const tmp = builder.getBuildDirectory("deno-deploy-adapter");
+
+      console.log(plugins);
 
       builder.rimraf(out);
       builder.rimraf(tmp);
@@ -42,6 +47,7 @@ export default function (opts = {}) {
             ? "new URL(import.meta.url).pathname"
             : "Deno.execPath()",
           SSL_ACTIVATED: ssl ? "true" : "false",
+          PLUGINS_ARRAY: ""
         },
       });
 

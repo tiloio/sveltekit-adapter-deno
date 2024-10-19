@@ -1,12 +1,8 @@
 import { serveDir, serveFile } from "file_server";
 import { dirname, extname, join } from "path";
+import Plugins from "";
 
-let sslCertificate: Deno.TlsCertifiedKeyPem | undefined = undefined;
-const usesSslCertificate = SSL_ACTIVATED && !Deno.env.has("NO_SSL");
-if (usesSslCertificate) {
-  const sllModule = await import("./ssl/ssl.ts");
-  sslCertificate = await sllModule.getOrCreateCerficate();
-}
+const Plugins = [PLUGINS_ARRAY];
 
 import server from "SERVER";
 
@@ -19,9 +15,25 @@ const baseDir = dirname(CURRENT_DIRNAME);
 const rootDir = join(baseDir, "static");
 
 const options = {
-  ...sslCertificate,
   port: parseInt(Deno.env.get("PORT") ?? "443"),
 };
+
+for (const plugin of Plugins) {
+  console.log(`⏳ Init plugin "${plugin.name}"...`);
+  const { newServeOptions } = await plugin.init({
+    serveOptions: options,
+    appDir,
+    baseDir,
+    rootDir,
+    prerendered,
+    env: Deno.env.toObject(),
+  });
+  if (newServeOptions) {
+    Object.assign(options, newServeOptions);
+    console.log(`🏗️ Plugin "${plugin.name}" changed serve options.`);
+  }
+  console.log(`✅ Initialized plugin "${plugin.name}".`);
+}
 
 Deno.serve(
   options,
